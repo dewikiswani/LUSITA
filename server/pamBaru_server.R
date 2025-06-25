@@ -1150,12 +1150,45 @@ output$showResult_new <- renderUI({
       )
     ),
     fluidRow(
+      column(12,
+             id = 's1',
+             tags$style('#s1 {
+                           background-color: #C4CCFF;
+                           }'),
+             h1(paste0("Bar Chart NPV"), align = "center")
+      ),
       column(4,
              plotlyOutput('plot_new')
+      )
+    ),
+    fluidRow(
+      column(12,
+             id = 's1',
+             tags$style('#s1 {
+                           background-color: #B3FAE0;
+                           }'),
+             h1(paste0("Scatter Plot Profit Tahunan"), align = "center")
       ),
       column(6,
-             
+             plotlyOutput('showPlotProfPrivat_new')
+      )
+    ),
+    br(),
+    br(),
+    fluidRow(
+      column(12,
+             id = 's2',
+             tags$style('#s2 {
+                           background-color: #B3FAE0;
+                           }'),
+             h1(paste0("Scatter Plot Profit Kumulatif"), align = "center")
       ),
+      column(6,
+             plotlyOutput('profitPlotKumP_new')
+      )
+    ),
+    fluidRow(
+      
       column(2,
              actionButton(("saveNewPAM_new"),"Simpan PAM",icon("paper-plane"),style="color: white;background-color: green;"),
              br(),
@@ -1391,7 +1424,13 @@ data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button
   }
   
   
-  
+  # hitung EAE -------------------------------------------------------------- 
+  atas <- dataDefine$rate.p*((1+dataDefine$rate.p/100)^yearIO)
+  bawah <- (1+dataDefine$rate.p/100)^yearIO-1
+  eae <- data.frame(npv.p*atas/bawah)
+  colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+  rownames(eae) <- c("Value")
+  eae
   
   # hitung nlc --------------------------------------------------------------
   
@@ -1413,8 +1452,17 @@ data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button
   nlc.p <- (p.tot.cost - p.sum.labor)/1000000
   nlc.s <- (s.tot.cost - s.sum.labor)/1000000
   nlc<-data.frame(PRIVATE=nlc.p,SOCIAL=nlc.s)
-  rownames(nlc)<-c("Non Labor Cost (Juta Rp/Ha)")
+  rownames(nlc)<-c("Non Labor Cost  for 1 cycle (Juta Rp/Ha)")
   nlc
+  lcost <- data.frame(p.sum.labor/1000000)
+  colnames(lcost)<-c("Labor Cost for 1 cycle (MRp/ha)")
+  rownames(lcost) <- c("Value")
+  lcost
+  
+  nlcost <- data.frame(nlc.p)
+  colnames(nlcost)<-c("Non Labor Cost for 1 cycle (MRp/ha)")
+  rownames(nlcost) <- c("Value")
+  nlcost
   # ending  nlc ------------------------------------------------------- 
   
   # hitung EC --------------------------------------------------------------
@@ -1423,7 +1471,7 @@ data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button
   s.ec <- s.sum.cost[[1]]/1000000
   ec <- data.frame(p.ec,s.ec)
   ec<-data.frame(PRIVATE=p.ec,SOCIAL=s.ec)
-  rownames(ec)<-c("Establishment cost (1 tahun pertama, Juta Rp/Ha)")
+  rownames(ec)<-c("Establishment cost (1st year only, MRp/ha)")
   ec
   
   # ending  EC ------------------------------------------------------- 
@@ -1444,26 +1492,115 @@ data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button
   
   hp <- data.frame(tot.prod/tot.labor)/1000 # karena ton jadi di bagi 1000
   colnames(hp)<-c("Harvesting Product (ton/HOK)")
-  rownames(hp) <- c("Nilai")
-  hp <- data.frame(t(hp))
+  rownames(hp) <- c("Value")
   hp
   # ending  hp ------------------------------------------------------- 
   
   # hitung lr --------------------------------------------------------------
   ############# PERHITUNGAN LABOR REQ FOR EST
   lr <- data.frame(sum.labor[[1]]) #pekerja pada tahun 1
-  colnames(lr)<-c("Labor Req for Est (1 tahun pertama)")
-  rownames(lr) <- c("Nilai")
-  lr <- data.frame(t(lr))
+  colnames(lr)<-c("Labor Req for Est (1st year only)")
+  rownames(lr) <- c("Value")
   lr
   
   # ending  lr ------------------------------------------------------- 
+  
+  
+  
+  # hitung PI dan biaya pembangunan tahun pertama--------------------------------------------------------------
+  costy1 <-p.budget %>%
+    filter(str_detect(grup,"input"))%>%
+    select('Y1')%>%
+    colSums(na.rm = T)
+  
+  sumprofit <- p.profit %>%
+    sum()
+  
+  pi <- data.frame(sumprofit/costy1)
+  colnames(pi)<-c("Profitability Index")
+  rownames(pi) <- c("Value")
+  pi
+  # ending   --------------------------------------------------------------
+  
+  # hitung BCR--------------------------------------------------------------
+  costYear <-p.budget %>%
+    filter(str_detect(grup,"input"))%>%
+    select(contains('Y'))%>%
+    colSums(na.rm = T)
+  
+  pvCost <- presentValue(costYear,c(1:length(costYear)),dataDefine$rate.p/100)
+  
+  revenueYear <- p.budget %>%
+    filter(str_detect(grup,"output"))%>%
+    select(contains('Y'))%>%
+    colSums(na.rm = T)
+  
+  pvRevenue <- presentValue(revenueYear,c(1:length(revenueYear)),dataDefine$rate.p/100)
+  
+  bcr <- pvRevenue/pvCost
+  
+  bcr <- data.frame(bcr)
+  colnames(bcr)<-c("Gross Benefit Cost Ratio")
+  rownames(bcr) <- c("Value")
+  bcr
+  # ending   --------------------------------------------------------------
+  
+  # hitung RTL--------------------------------------------------------------
+  revenueYearSum <- sum(revenueYear)
+  nlcVal <- (p.tot.cost - p.sum.labor)
+  tkQuant <- io.in %>%  filter(str_detect(komponen, c("tenaga kerja|tk|kerja|tenaga")))%>%
+    select(contains('Y'))%>%
+    colSums(na.rm = T)%>%
+    sum()
+  rtl <- (revenueYearSum-nlcVal)/tkQuant
+  
+  rtl <- data.frame(rtl)
+  colnames(rtl)<-c("Return to Labor (Rp)")
+  rownames(rtl) <- c("Value")
+  rtl
+  # ending   --------------------------------------------------------------
+  
+  # tampilan rate.p, rate.s, nilai tukar rupiah --------------------------------------------------------------
+  showRateP <- data.frame(dataDefine$rate.p)
+  colnames(showRateP)<-c("Discount Rate Private")
+  rownames(showRateP) <- c("Value")
+  showRateP
+  
+  showRateS <- data.frame(dataDefine$rate.s)
+  colnames(showRateS)<-c("Discount Rate Social")
+  rownames(showRateS) <- c("Value")
+  showRateS
+  
+  showExRate <- data.frame(dataDefine$nilai.tukar)
+  colnames(showExRate)<-c("Nilai Tukar Rupiah")
+  rownames(showExRate) <- c("Value")
+  showExRate
+  
+  # showBauMacro <- rbind(showRateP,showRateS,showExRate)
+  # rownames(showBauMacro)<-c("Discount Rate Private", "Discount Rate Social", "Nilai Tukar Rupiah")
+  # colnames(showBauMacro) <- c("Value")
+  # showBauMacro <- data.frame(showBauMacro)
+  
+  p.profit.ha <- p.profit[-1]
+  
   # RESULT 
+  dataDefine$eae <- eae
   dataDefine$npv <- hsl.npv
   dataDefine$nlc <- nlc
   dataDefine$ec <- ec
   dataDefine$hp <- hp
   dataDefine$lr <- lr
+  
+  dataDefine$rtl <- rtl
+  dataDefine$bcr <- bcr
+  dataDefine$pi <- pi
+  dataDefine$lcost <- lcost
+  dataDefine$nlcost <- nlcost
+  
+  dataDefine$nlcost <- nlcost
+  dataDefine$nlcost <- nlcost
+  
+  dataDefine$p.profit.ha <- p.profit.ha
   
   saveRDS(dataDefine,file = fileName)
   
@@ -1472,13 +1609,86 @@ data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button
   tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
   tabel1
   
-  tabel2 <- rbind(hp,lr)
-  tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
+  tabel2 <- cbind(eae,hp,lr,pi,bcr,rtl,lcost, nlcost, showRateP,showRateS,showExRate)
+  tabel2 <- t(tabel2)
+  # tabel2[] <- sapply(tabel2, function(i) sprintf('%.6g', i))
   tabel2
   
   tabelGab <- list(tabel1=tabel1,tabel2=tabel2)
   tabelGab
 })
+
+
+preparePlotProfitYear <- eventReactive(c(input$running_button_No_new,input$running_button_Yes_new, input$running_button_new),{
+  
+  datapath <- paste0("data/", input$sut_new, "/","^KOMODITAS BARU","/")
+  fileName <- paste0(datapath,"saveData_new","_",
+                     input$sut_new,"_",input$kom_new,"_",
+                     input$selected_provinsi_new,"_",input$th_new,"_",input$tipeLahan_new,"_",input$tipeKebun_new,"_",reactData$timeInput,".rds")
+  dataDefine <- readRDS(fileName)
+  
+  
+  dat_df.new <- data.frame()
+    dat_df.new <- data.frame(no = seq(1,length(dataDefine$p.profit.ha), 1),
+                              profit.tahunan=dataDefine$p.profit.ha,
+                              kom = dataDefine$kom)
+ 
+  
+  
+  yes <- dat_df.new %>%
+    group_by(kom) %>%
+    plot_ly(x=~no, y=~profit.tahunan, type='scatter', color=~kom, mode="lines+markers", yaxis=~kom) %>%
+    layout(xaxis=list(title="Tahun", domain = list(0.15, 0.95)), yaxis=list(title="Profit Tahunan Privat"))%>%
+    layout(legend = list(title=list(text='<b> Komoditas (Urutan) </b>'),
+                         orientation = "h",   # show entries horizontally
+                         xanchor = "center",  # use center of legend as anchor
+                         x = 0.95, y = -0.25))
+  yes
+})
+
+output$showPlotProfPrivat_new <- renderPlotly({
+  preparePlotProfitYear()
+})
+
+preparePlotProfitKum <- eventReactive(c(input$running_button_No_new,input$running_button_Yes_new, input$running_button_new),{
+  
+  datapath <- paste0("data/", input$sut_new, "/","^KOMODITAS BARU","/")
+  fileName <- paste0(datapath,"saveData_new","_",
+                     input$sut_new,"_",input$kom_new,"_",
+                     input$selected_provinsi_new,"_",input$th_new,"_",input$tipeLahan_new,"_",input$tipeKebun_new,"_",reactData$timeInput,".rds")
+  dataDefine <- readRDS(fileName)
+  
+  
+  dat_df.new <- data.frame()
+  dat_df.new <- data.frame(no = seq(1,length(dataDefine$p.profit.ha), 1),
+                           profit.kumulatif=cumsum(dataDefine$p.profit.ha),
+                           kom = dataDefine$kom)
+  
+  
+  
+  yes <- dat_df.new %>%
+    group_by(kom) %>%
+    plot_ly(x=~no, y=~profit.kumulatif, type='scatter', color=~kom, mode="lines+markers", yaxis=~kom) %>%
+    layout(xaxis=list(title="Tahun", domain = list(0.15, 0.95)), yaxis=list(title="Profit Kumulatif"))%>%
+    layout(legend = list(title=list(text='<b> Komoditas (Urutan) </b>'),
+                         orientation = "h",   # show entries horizontally
+                         xanchor = "center",  # use center of legend as anchor
+                         x = 0.95, y = -0.25))
+  yes
+})
+
+output$profitPlotKumP_new <- renderPlotly({
+  preparePlotProfitKum()
+})
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1506,7 +1716,7 @@ output$plot_new <- renderPlotly({
 })
 
 observeEvent(input$saveNewPAM_new, {
-  browser()
+  # browser()
   datapath <- paste0("data/", input$sut_new, "/","^KOMODITAS BARU","/")
   fileName <- paste0(datapath,"saveData_new","_",
                      input$sut_new,"_",input$kom_new,"_",

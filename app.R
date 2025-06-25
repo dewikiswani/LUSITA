@@ -929,6 +929,15 @@ app <- shiny::shinyApp(
           # ending  npv --------------------------------------------------------------
         }
         
+        
+        # hitung EAE -------------------------------------------------------------- 
+        atas <- dataDefine$rate.p*((1+dataDefine$rate.p/100)^yearIO)
+        bawah <- (1+dataDefine$rate.p/100)^yearIO-1
+        eae <- data.frame(npv.p*atas/bawah)
+        colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+        rownames(eae) <- c("Value")
+        eae
+        
         # hitung nlc --------------------------------------------------------------
         
         ################ penghitungan NLC dan labor cost 
@@ -1068,6 +1077,7 @@ app <- shiny::shinyApp(
         ##### save data template
         
         # RESULT 
+        dataDefine$eae <- eae
         dataDefine$npv <- hsl.npv
         dataDefine$nlc <- nlc
         dataDefine$ec <- ec
@@ -1536,6 +1546,7 @@ app <- shiny::shinyApp(
         showPi <- dataDefine$pi
         showLcost <- dataDefine$lcost
         showNlcost <- dataDefine$nlcost
+        showEae <- dataDefine$eae
         # showNpv <- dataDefine$npv[1,1]
     
         showBauMacro <- rbind(showRateP,showRateS,showExRate)
@@ -1555,6 +1566,7 @@ app <- shiny::shinyApp(
         rownames(showPi) <- c("Nilai")
         rownames(showLcost) <- c("Nilai")
         rownames(showNlcost) <- c("Nilai")
+        rownames(showEae) <- c("Nilai")
         # rownames(showNpv) <- c("Nilai")
         
         showRtl <- data.frame(t(showRtl))
@@ -1562,12 +1574,13 @@ app <- shiny::shinyApp(
         showPi <- data.frame(t(showPi))
         showLcost <- data.frame(t(showLcost))
         showNlcost <- data.frame(t(showNlcost))
+        showEae <- data.frame(t(showEae))
         # showNpv <- data.frame(t(showNpv))
         
         
         # ending  ------------------------------------------------------- 
 
-        tabel2 <- rbind(showHp,showLr, showRtl, showBCR, showPi, showLcost, showNlcost, showBauMacro)
+        tabel2 <- rbind(showEae,showHp,showLr, showRtl, showBCR, showPi, showLcost, showNlcost, showBauMacro)
         tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
 
         dataView <- datatable(tabel2, option=list(dom = "t")) 
@@ -2937,11 +2950,19 @@ app <- shiny::shinyApp(
           npv.us<-data.frame(PRIVATE=npv.p.ha.us,SOCIAL=npv.s.ha.us)
           hsl.npv<-rbind(hsl.npv,npv.us)
           
-          #browser()
           
           rownames(hsl.npv)<-c("NPV (Rp/Ha)", "NPV (US/Ha)")
           hsl.npv
           # ending  npv --------------------------------------------------------------
+          
+          # hitung EAE -------------------------------------------------------------- 
+          atas <- dataDefine$rate.p*((1+dataDefine$rate.p/100)^yearIO)
+          bawah <- (1+dataDefine$rate.p/100)^yearIO-1
+          eae <- data.frame(npv.p*atas/bawah)
+          colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+          rownames(eae) <- c("Value")
+          eae
+          
           
           # hitung Discounted estab cost --------------------------------------------------------------
           
@@ -3273,6 +3294,13 @@ app <- shiny::shinyApp(
             
           }
           
+          # hitung EAE -------------------------------------------------------------- 
+          atas <- dataDefine$rate.p*((1+dataDefine$rate.p/100)^yearIO)
+          bawah <- (1+dataDefine$rate.p/100)^yearIO-1
+          eae <- data.frame(npv.p*atas/bawah)
+          colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+          rownames(eae) <- c("Value")
+          eae
           
           # hitung nlc --------------------------------------------------------------
           
@@ -3421,7 +3449,7 @@ app <- shiny::shinyApp(
           tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
           tabel1
           
-          tabel2 <- rbind(hp,lr,pi,bcr,rtl,lcost, nlcost, showBauMacro)
+          tabel2 <- rbind(eae,hp,lr,pi,bcr,rtl,lcost, nlcost, showBauMacro)
           tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
           tabel2
           
@@ -3685,6 +3713,13 @@ app <- shiny::shinyApp(
         hsl.npv
         # ending  npv --------------------------------------------------------------
         
+        # hitung EAE -------------------------------------------------------------- 
+        atas <- dataDefine$rate.p*((1+dataDefine$rate.p/100)^yearIO)
+        bawah <- (1+dataDefine$rate.p/100)^yearIO-1
+        eae <- data.frame(npv.p*atas/bawah)
+        colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+        rownames(eae) <- c("Value")
+        eae
         # hitung Discounted estab cost --------------------------------------------------------------
         
         ################ penghitungan dec
@@ -3920,6 +3955,7 @@ app <- shiny::shinyApp(
         # ending  -------------------------------------------------------
         
         # RESULT 
+        dataDefine$eae <- eae
         dataDefine$npv <- hsl.npv
         dataDefine$nlc <- nlc
         dataDefine$ec <- ec
@@ -3945,7 +3981,7 @@ app <- shiny::shinyApp(
         tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
         tabel1
         
-        tabel2 <- rbind(hp,lr,pi,bcr,rtl, lcost,nlcost, showBauMacro,totArea)
+        tabel2 <- rbind(eae,hp,lr,pi,bcr,rtl, lcost,nlcost, showBauMacro,totArea)
         tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
         tabel2
         
@@ -4141,7 +4177,13 @@ app <- shiny::shinyApp(
           
         }
         
-        
+        # hitung EAE -------------------------------------------------------------- 
+        atas <- dataDefine$rate.p*((1+dataDefine$rate.p/100)^yearIO)
+        bawah <- (1+dataDefine$rate.p/100)^yearIO-1
+        eae <- data.frame(npv.p*atas/bawah)
+        colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+        rownames(eae) <- c("Value")
+        eae
         # hitung nlc --------------------------------------------------------------
         
         ################ penghitungan NLC
@@ -4286,6 +4328,7 @@ app <- shiny::shinyApp(
         # ending  -------------------------------------------------------
         
         # RESULT 
+        dataDefine$eae <- eae
         dataDefine$npv <- hsl.npv
         dataDefine$nlc <- nlc
         dataDefine$ec <- ec
@@ -4304,7 +4347,7 @@ app <- shiny::shinyApp(
         tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
         tabel1
         
-        tabel2 <- rbind(hp,lr,pi,bcr,rtl, lcost,nlcost, showBauMacro)
+        tabel2 <- rbind(eae,hp,lr,pi,bcr,rtl, lcost,nlcost, showBauMacro)
         tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
         tabel2
         

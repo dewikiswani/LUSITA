@@ -457,6 +457,14 @@ resultParTemp <- reactive({
     hsl.npv
     # ending  npv --------------------------------------------------------------
     
+    # hitung EAE -------------------------------------------------------------- 
+    atas <- rate.p_par*((1+rate.p_par/100)^yearIO)
+    bawah <- (1+rate.p_par/100)^yearIO-1
+    eae <- data.frame(npv.p*atas/bawah)
+    colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+    rownames(eae) <- c("Value")
+    eae
+    
     # hitung Discounted estab cost --------------------------------------------------------------
     
     ################ penghitungan dec
@@ -856,6 +864,16 @@ resultParTemp <- reactive({
       # ending  npv --------------------------------------------------------------
     }
     
+    
+    # hitung EAE -------------------------------------------------------------- 
+    atas <- rate.p_par*((1+rate.p_par/100)^yearIO)
+    bawah <- (1+rate.p_par/100)^yearIO-1
+    eae <- data.frame(npv.p*atas/bawah)
+    colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+    rownames(eae) <- c("Value")
+    eae
+    
+    
     # hitung nlc --------------------------------------------------------------
     
     ################ penghitungan NLC
@@ -992,6 +1010,7 @@ resultParTemp <- reactive({
     ##### save data template
     
     # RESULT 
+    dataDefine$eae <- eae
     dataDefine$npv <- hsl.npv
     dataDefine$nlc <- nlc
     dataDefine$ec <- ec
@@ -1947,6 +1966,15 @@ data.graph_par <- eventReactive(c(input$runSimPrice,input$runSimIO),{
     hsl.npv
     # ending  npv --------------------------------------------------------------
     
+    
+    # hitung EAE -------------------------------------------------------------- 
+    atas <- rate.p*((1+rate.p/100)^yearIO)
+    bawah <- (1+rate.p/100)^yearIO-1
+    eae <- data.frame(npv.p*atas/bawah)
+    colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+    rownames(eae) <- c("Value")
+    eae
+    
     # hitung Discounted estab cost --------------------------------------------------------------
     
     ################ penghitungan dec
@@ -2253,6 +2281,13 @@ data.graph_par <- eventReactive(c(input$runSimPrice,input$runSimIO),{
       
     }
     
+    # hitung EAE -------------------------------------------------------------- 
+    atas <- dataDefine$rate.p*((1+dataDefine$rate.p/100)^yearIO)
+    bawah <- (1+dataDefine$rate.p/100)^yearIO-1
+    eae <- data.frame(npv.p*atas/bawah)
+    colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+    rownames(eae) <- c("Value")
+    eae
     
     # hitung nlc --------------------------------------------------------------
     
@@ -2400,7 +2435,7 @@ data.graph_par <- eventReactive(c(input$runSimPrice,input$runSimIO),{
     tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
     tabel1
     
-    tabel2 <- rbind(t(hp),t(lr),t(pi),t(bcr),t(rtl),t(lcost), t(nlcost),(showBauMacro))
+    tabel2 <- rbind(t(eae),t(hp),t(lr),t(pi),t(bcr),t(rtl),t(lcost), t(nlcost),(showBauMacro))
     # tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
     tabel2
     
@@ -3042,6 +3077,13 @@ data.graph.new_par <- eventReactive(c(input$runSimPrice,input$runSimIO),{
     }
     
     
+    # hitung EAE -------------------------------------------------------------- 
+    atas <- dataDefine$rate.p*((1+dataDefine$rate.p/100)^yearIO)
+    bawah <- (1+dataDefine$rate.p/100)^yearIO-1
+    eae <- data.frame(npv.p*atas/bawah)
+    colnames(eae)<-c("Equal Annual Equivalent (EAE)")
+    rownames(eae) <- c("Value")
+    eae
     # hitung nlc --------------------------------------------------------------
     
     ################ penghitungan NLC
@@ -3189,6 +3231,7 @@ data.graph.new_par <- eventReactive(c(input$runSimPrice,input$runSimIO),{
     # ending  ------------------------------------------------------- 
     
     # RESULT 
+    dataDefine$eae <- eae
     dataDefine$npv <- hsl.npv
     dataDefine$nlc <- nlc
     dataDefine$ec <- ec
@@ -3206,7 +3249,7 @@ data.graph.new_par <- eventReactive(c(input$runSimPrice,input$runSimIO),{
     tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
     tabel1
     
-    tabel2 <- rbind(t(hp),t(lr),t(pi),t(bcr),t(rtl),t(lcost), t(nlcost),(showBauMacro))
+    tabel2 <- rbind(t(eae),t(hp),t(lr),t(pi),t(bcr),t(rtl),t(lcost), t(nlcost),(showBauMacro))
     # tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
     # tabel2 <- formatC(tabel2, digits = 2, format = "f")
     tabel2
