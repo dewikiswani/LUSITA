@@ -9,13 +9,13 @@ pamBaru <- argonTabItem(
       hover_lift = TRUE,
       shadow = TRUE,
       shadow_size = NULL,
-      hover_shadow = FALSE,
+      hover_shadow = TRUE,
       border_level = 0,
       icon = argonIcon("atom"),
       status = "primary",
       background_color = NULL,
       gradient = FALSE, 
-      floating = FALSE,
+      floating = TRUE,
       
       argonRow(
         argonColumn(

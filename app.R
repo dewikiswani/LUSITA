@@ -62,13 +62,11 @@ app <- shiny::shinyApp(
     header = argonHeader,
     body = argonDashBody(
       argonTabItems(
-        #home,
+        pamBaru,
         modulSatu,
         pamTemplate,
-        pamParsial,
-        pamBaru
-        # ,
-        # deskriptifPlot
+        pamParsial
+        
       )
     ),
     footer = argonFooter
@@ -396,7 +394,7 @@ app <- shiny::shinyApp(
         s.sum.rev <- s.rev.output[,-(1:6)] %>%
           colSums(na.rm = T)
         # sum(p.sum.rev)
-        sum(s.sum.rev)
+        # sum(s.sum.rev)
         
         p.trad.input <- p.budget %>%
           filter(str_detect(bagian,"input"))
@@ -407,7 +405,7 @@ app <- shiny::shinyApp(
           filter(str_detect(bagian,"input"))
         s.trad.input <- s.trad.input[,-(1:6)] %>%
           colSums(na.rm = T)
-        sum(s.trad.input)
+        # sum(s.trad.input)
         
         p.trad.capital <- p.budget %>%
           filter(str_detect(bagian,"tradable capital"))
@@ -418,7 +416,7 @@ app <- shiny::shinyApp(
           filter(str_detect(bagian,"tradable capital"))
         s.trad.capital <- s.trad.capital[,-(1:6)] %>%
           colSums(na.rm = T)
-        sum(s.trad.capital)
+        # sum(s.trad.capital)
         
         p.factor.labor<- p.budget %>%
           filter(str_detect(bagian,"labor"))
@@ -951,14 +949,19 @@ app <- shiny::shinyApp(
         nlc.p <- (p.tot.cost - p.sum.labor)/1000000
         nlc.s <- (s.tot.cost - s.sum.labor)/1000000
         nlc<-data.frame(PRIVATE=nlc.p,SOCIAL=nlc.s)
-        rownames(nlc)<-c("Non Labor Cost (MRp/Ha)")
+        rownames(nlc)<-c("Non Labor Cost  for 1 cycle (MRp/Ha)")
         nlc
         
         
         lcost <- data.frame(p.sum.labor/1000000)
-        colnames(lcost)<-c("Labor Cost (MRp/ha)")
+        colnames(lcost)<-c("Labor Cost for 1 cycle (MRp/ha)")
         rownames(lcost) <- c("Value")
         lcost
+        
+        nlcost <- data.frame(nlc.p)
+        colnames(nlcost)<-c("Non Labor Cost for 1 cycle (MRp/ha)")
+        rownames(nlcost) <- c("Value")
+        nlcost
         # ending  nlc ------------------------------------------------------- 
         
         # hitung EC --------------------------------------------------------------
@@ -1040,7 +1043,7 @@ app <- shiny::shinyApp(
         bcr <- pvRevenue/pvCost
         
         bcr <- data.frame(bcr)
-        colnames(bcr)<-c("Benefit Cost Ratio")
+        colnames(bcr)<-c("Gross Benefit Cost Ratio")
         rownames(bcr) <- c("Value")
         bcr
         # ending   --------------------------------------------------------------
@@ -1075,7 +1078,7 @@ app <- shiny::shinyApp(
         dataDefine$bcr <- bcr
         dataDefine$pi <- pi
         dataDefine$lcost <- lcost
-        
+        dataDefine$nlcost <- nlcost
         
         # dataDefine$tabel.profit <- tabel.profit
         dataDefine$p.profit.ha <- p.profit.ha
@@ -1532,6 +1535,7 @@ app <- shiny::shinyApp(
         showBCR <- dataDefine$bcr
         showPi <- dataDefine$pi
         showLcost <- dataDefine$lcost
+        showNlcost <- dataDefine$nlcost
         # showNpv <- dataDefine$npv[1,1]
     
         showBauMacro <- rbind(showRateP,showRateS,showExRate)
@@ -1550,18 +1554,20 @@ app <- shiny::shinyApp(
         rownames(showBCR) <- c("Nilai")
         rownames(showPi) <- c("Nilai")
         rownames(showLcost) <- c("Nilai")
+        rownames(showNlcost) <- c("Nilai")
         # rownames(showNpv) <- c("Nilai")
         
         showRtl <- data.frame(t(showRtl))
         showBCR <- data.frame(t(showBCR))
         showPi <- data.frame(t(showPi))
         showLcost <- data.frame(t(showLcost))
+        showNlcost <- data.frame(t(showNlcost))
         # showNpv <- data.frame(t(showNpv))
         
         
         # ending  ------------------------------------------------------- 
 
-        tabel2 <- rbind(showHp,showLr, showRtl, showBCR, showPi, showLcost, showBauMacro)
+        tabel2 <- rbind(showHp,showLr, showRtl, showBCR, showPi, showLcost, showNlcost, showBauMacro)
         tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
 
         dataView <- datatable(tabel2, option=list(dom = "t")) 
@@ -3288,13 +3294,17 @@ app <- shiny::shinyApp(
           nlc.p <- (p.tot.cost - p.sum.labor)/1000000
           nlc.s <- (s.tot.cost - s.sum.labor)/1000000
           nlc<-data.frame(PRIVATE=nlc.p,SOCIAL=nlc.s)
-          rownames(nlc)<-c("Non Labor Cost (Juta Rp/Ha)")
+          rownames(nlc)<-c("Non Labor Cost  for 1 cycle (Juta Rp/Ha)")
           nlc
-          # ending  nlc ------------------------------------------------------- 
           lcost <- data.frame(p.sum.labor/1000000)
-          colnames(lcost)<-c("Labor Cost (MRp/ha)")
+          colnames(lcost)<-c("Labor Cost for 1 cycle (MRp/ha)")
           rownames(lcost) <- c("Value")
           lcost
+          
+          nlcost <- data.frame(nlc.p)
+          colnames(nlcost)<-c("Non Labor Cost for 1 cycle (MRp/ha)")
+          rownames(nlcost) <- c("Value")
+          nlcost
           # ending  nlc ------------------------------------------------------- 
           
           # hitung EC --------------------------------------------------------------
@@ -3376,7 +3386,7 @@ app <- shiny::shinyApp(
           bcr <- pvRevenue/pvCost
           
           bcr <- data.frame(bcr)
-          colnames(bcr)<-c("Benefit Cost Ratio")
+          colnames(bcr)<-c("Gross Benefit Cost Ratio")
           rownames(bcr) <- c("Value")
           bcr
           # ending   --------------------------------------------------------------
@@ -3411,7 +3421,7 @@ app <- shiny::shinyApp(
           tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
           tabel1
           
-          tabel2 <- rbind(hp,lr,pi,bcr,rtl,lcost, showBauMacro)
+          tabel2 <- rbind(hp,lr,pi,bcr,rtl,lcost, nlcost, showBauMacro)
           tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
           tabel2
           
@@ -3782,30 +3792,146 @@ app <- shiny::shinyApp(
         lfo
         # ending  Labor for Operation -------------------------------------------------------
         
+        nlc.p <- (p.tot.cost - p.sum.labor)/1000000
+        nlc.s <- (s.tot.cost - s.sum.labor)/1000000
+        nlc<-data.frame(PRIVATE=nlc.p,SOCIAL=nlc.s)
+        rownames(nlc)<-c("Non Labor Cost  for 1 cycle (Juta Rp/Ha)")
+        nlc
+        
+        lcost <- data.frame(p.sum.labor/1000000)
+        colnames(lcost)<-c("Labor Cost for 1 cycle (MRp/ha)")
+        rownames(lcost) <- c("Value")
+        lcost
+        
+        nlcost <- data.frame(nlc.p)
+        colnames(nlcost)<-c("Non Labor Cost for 1 cycle (MRp/ha)")
+        rownames(nlcost) <- c("Value")
+        nlcost
+        # ending  nlc ------------------------------------------------------- 
+        
+        # hitung EC --------------------------------------------------------------
+        ############# PERHITUNGAN ESTABLISHMENT COST
+        p.ec <- p.sum.cost[[1]]/1000000
+        s.ec <- s.sum.cost[[1]]/1000000
+        ec <- data.frame(p.ec,s.ec)
+        ec<-data.frame(PRIVATE=p.ec,SOCIAL=s.ec)
+        rownames(ec)<-c("Establishment cost (1st year only, MRp/ha)")
+        ec
+        
+        # ending  EC ------------------------------------------------------- 
         
         # hitung hp --------------------------------------------------------------
         ############# PERHITUNGAN HARVESTING PRODUCT
         fil.prod <- dataGeneral %>%  filter(str_detect(grup,"output")) #filter io untuk grup output (hasil panen)
         fil.prod <- fil.prod %>%  filter(str_detect(komponen,"utama"))
-        sum.prod <- fil.prod[,c(paste0(c(rep("Y", yearIO)),1:yearIO))] %>%
+        sum.prod <- fil.prod[,-c(1:5,36)] %>%
           colSums(na.rm = T)
         tot.prod <- sum(sum.prod)
         
-        hp <- data.frame( tot.prod/total.labor)/1000 # karena ton jadi di bagi 1000
+        fil.labor <- dataGeneral %>%  filter(str_detect(komponen, c("tenaga kerja|tk|kerja|tenaga")))
+        fil.labor <- filter(fil.labor, str_detect(unit, c("hok|HOK|pers-day")))
+        sum.labor <- fil.labor[,-c(1:5,36)] %>%
+          colSums(na.rm = T)
+        tot.labor <- sum(sum.labor)
+        
+        hp <- data.frame(tot.prod/tot.labor)/1000 # karena ton jadi di bagi 1000
         colnames(hp)<-c("Harvesting Product (ton/HOK)")
         rownames(hp) <- c("Value")
         hp
+        # ending  hp ------------------------------------------------------- 
+        
+        # hitung lr --------------------------------------------------------------
+        ############# PERHITUNGAN LABOR REQ FOR EST
+        lr <- data.frame(sum.labor[[1]]) #pekerja pada tahun 1
+        colnames(lr)<-c("Labor Req for Est (1st year only)")
+        rownames(lr) <- c("Value")
+        lr
+        
+        # ending  lr ------------------------------------------------------- 
+        
+        # hitung profit --------------------------------------------------------------
+        p.profit.ha <- p.profit[-1]/readDataTemplate$total.area[1]
+        s.profit.ha <- s.profit[-1]/readDataTemplate$total.area[1]
+        # ending  profit ------------------------------------------------------
+        
+        
+        # hitung PI dan biaya pembangunan tahun pertama--------------------------------------------------------------
+        costy1 <-p.budget %>%
+          filter(str_detect(grup,"input"))%>%
+          select('Y1')%>%
+          colSums(na.rm = T)
+        
+        sumprofit <- p.profit %>%
+          sum()
+        
+        pi <- data.frame(sumprofit/costy1)
+        colnames(pi)<-c("Profitability Index")
+        rownames(pi) <- c("Value")
+        pi
+        # ending   --------------------------------------------------------------
+        
+        # hitung BCR--------------------------------------------------------------
+        costYear <-p.budget %>%
+          filter(str_detect(grup,"input"))%>%
+          select(contains('Y'))%>%
+          colSums(na.rm = T)
+        
+        pvCost <- presentValue(costYear,c(1:length(costYear)),rate.p/100)
+        
+        revenueYear <- p.budget %>%
+          filter(str_detect(grup,"output"))%>%
+          select(contains('Y'))%>%
+          colSums(na.rm = T)
+        
+        pvRevenue <- presentValue(revenueYear,c(1:length(revenueYear)),rate.p/100)
+        
+        bcr <- pvRevenue/pvCost
+        
+        bcr <- data.frame(bcr)
+        colnames(bcr)<-c("Gross Benefit Cost Ratio")
+        rownames(bcr) <- c("Value")
+        bcr
+        # ending   --------------------------------------------------------------
+        
+        # hitung RTL--------------------------------------------------------------
+        revenueYearSum <- sum(revenueYear)
+        nlcVal <- (p.tot.cost - p.sum.labor)
+        tkQuant <- io.in %>%  filter(str_detect(komponen, c("tenaga kerja|tk|kerja|tenaga")))%>%
+          select(contains('Y'))%>%
+          colSums(na.rm = T)%>%
+          sum()
+        rtl <- (revenueYearSum-nlcVal)/tkQuant
+        
+        rtl <- data.frame(rtl)
+        colnames(rtl)<-c("Return to Labor (Rp)")
+        rownames(rtl) <- c("Value")
+        rtl
+        # ending   --------------------------------------------------------------
+        
+        # tampilan rate.p, rate.s, nilai tukar rupiah --------------------------------------------------------------
+        showRateP <- (dataDefine$rate.p)
+        showRateS <- (dataDefine$rate.s)
+        showExRate <- (dataDefine$nilai.tukar)
+        showBauMacro <- rbind(showRateP,showRateS,showExRate)
+        rownames(showBauMacro)<-c("Discount Rate Private", "Discount Rate Social", "Nilai Tukar Rupiah")
+        colnames(showBauMacro) <- c("Nilai")
+        showBauMacro
+        
+        # ending  -------------------------------------------------------
         
         # RESULT 
         dataDefine$npv <- hsl.npv
-        dataDefine$dec <- dec
-        dataDefine$ypc <- ypc
-        dataDefine$lfe <- lfe
-        dataDefine$lfo <- lfo
+        dataDefine$nlc <- nlc
+        dataDefine$ec <- ec
         dataDefine$hp <- hp
-        saveRDS(dataDefine,file = fileName)
+        dataDefine$lr <- lr
         
-        # ending  hp ------------------------------------------------------- 
+        dataDefine$rtl <- rtl
+        dataDefine$bcr <- bcr
+        dataDefine$pi <- pi
+        dataDefine$lcost <- lcost
+        dataDefine$nlcost <- nlcost
+        saveRDS(dataDefine,file = fileName)
         
         # Total area
         totArea <- data.frame(dataDefine$totalArea)
@@ -3813,14 +3939,15 @@ app <- shiny::shinyApp(
         rownames(totArea) <- c("Value")
         totArea
         
-        tabel1 <- rbind(hsl.npv,dec,ypc,lfe,lfo)
+
+        
+        tabel1 <- rbind(hsl.npv,nlc,ec)
         tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
         tabel1
         
-        tabel2 <- data.frame(t(cbind(hp,totArea)))
+        tabel2 <- rbind(hp,lr,pi,bcr,rtl, lcost,nlcost, showBauMacro,totArea)
         tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
         tabel2
-        
         
         # tabel1 <- rbind(hsl.npv,ypc,lfe,lfo)
         # tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
@@ -4035,12 +4162,17 @@ app <- shiny::shinyApp(
         nlc.p <- (p.tot.cost - p.sum.labor)/1000000
         nlc.s <- (s.tot.cost - s.sum.labor)/1000000
         nlc<-data.frame(PRIVATE=nlc.p,SOCIAL=nlc.s)
-        rownames(nlc)<-c("Non Labor Cost (Juta Rp/Ha)")
+        rownames(nlc)<-c("Non Labor Cost  for 1 cycle (Juta Rp/Ha)")
         nlc
         lcost <- data.frame(p.sum.labor/1000000)
-        colnames(lcost)<-c("Labor Cost (MRp/ha)")
+        colnames(lcost)<-c("Labor Cost for 1 cycle (MRp/ha)")
         rownames(lcost) <- c("Value")
         lcost
+        
+        nlcost <- data.frame(nlc.p)
+        colnames(nlcost)<-c("Non Labor Cost for 1 cycle (MRp/ha)")
+        rownames(nlcost) <- c("Value")
+        nlcost
         # ending  nlc ------------------------------------------------------- 
         
         # hitung EC --------------------------------------------------------------
@@ -4122,7 +4254,7 @@ app <- shiny::shinyApp(
         bcr <- pvRevenue/pvCost
         
         bcr <- data.frame(bcr)
-        colnames(bcr)<-c("Benefit Cost Ratio")
+        colnames(bcr)<-c("Gross Benefit Cost Ratio")
         rownames(bcr) <- c("Value")
         bcr
         # ending   --------------------------------------------------------------
@@ -4159,6 +4291,12 @@ app <- shiny::shinyApp(
         dataDefine$ec <- ec
         dataDefine$hp <- hp
         dataDefine$lr <- lr
+        
+        dataDefine$rtl <- rtl
+        dataDefine$bcr <- bcr
+        dataDefine$pi <- pi
+        dataDefine$lcost <- lcost
+        dataDefine$nlcost <- nlcost
         saveRDS(dataDefine,file = fileName)
         
         
@@ -4166,7 +4304,7 @@ app <- shiny::shinyApp(
         tabel1[] <- lapply(tabel1, function(i) sprintf('%.6g', i))
         tabel1
         
-        tabel2 <- rbind(hp,lr,pi,bcr,rtl,lcost, showBauMacro)
+        tabel2 <- rbind(hp,lr,pi,bcr,rtl, lcost,nlcost, showBauMacro)
         tabel2[] <- lapply(tabel2, function(i) sprintf('%.6g', i))
         tabel2
         
@@ -5273,7 +5411,7 @@ app <- shiny::shinyApp(
             fluidRow(
               column(9,
                      selectInput('pilihKomponenInput_LargeScale',"Pilih Komponen", width = "600px",
-                                 choices = c(" ","pupuk","bibit" ,"peralatan", "bahan kimia","tradable capital","tenaga kerja ahli","tenaga kerja unskilled","factor capital")),
+                                 choices = c(" ","pupuk","pestisida","insektisida","herbisida","bibit" ,"peralatan", "bahan kimia","tradable capital","tenaga kerja ahli","tenaga kerja unskilled","factor capital")),
                      #dibuat manipulasi option nilai kosong krn utk mengaktifkan nilai input$pilihKomponenInput_LargeScale saat user kedua kalinya masuk
 
               ),
@@ -5320,7 +5458,7 @@ app <- shiny::shinyApp(
             fluidRow(
               column(9,
                      selectInput('pilihKomponenInput',"Pilih Komponen", width = "600px", 
-                                 choices = c(" ","pupuk", "bibit", "peralatan","tenaga kerja")),
+                                 choices = c(" ","pupuk","pestisida","insektisida","herbisida", "bibit", "peralatan","tenaga kerja")),
                      #dibuat manipulasi option nilai kosong krn utk mengaktifkan nilai input$pilihKomponenInput saat user kedua kalinya masuk 
                      
               ),

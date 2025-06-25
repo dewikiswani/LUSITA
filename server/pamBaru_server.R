@@ -166,13 +166,13 @@ output$showMakro_new <- renderUI({
       br(),
       fluidRow(
         column(3,
-               sliderInput(("rate.p_new"), "Discount Rate Private", 7.4 ,min = 0, max = 15, step = 0.01)
+               sliderInput(("rate.p_new"), "Discount Rate Private", 7.1 ,min = 0, max = 15, step = 0.01)
         ),
         column(3,
-               sliderInput(("rate.s_new"), "Discount Rate Social", 2.4 ,min = 0, max = 8, step = 0.01)
+               sliderInput(("rate.s_new"), "Discount Rate Social", 2.1 ,min = 0, max = 8, step = 0.01)
         ),
         column(4,
-               sliderInput(("nilai.tukar_new"), "Nilai Tukar Rupiah", 14831 ,min = 10000, max = 20000, step = 1)
+               sliderInput(("nilai.tukar_new"), "Nilai Tukar Rupiah", 15800 ,min = 10000, max = 20000, step = 1)
         ),
         column(2,
                br(),
@@ -355,7 +355,7 @@ modalPilihBarisInput_new <- function(failed = FALSE) {
         h3("Berapa jumlah komponen (baris) yang akan user bangun pada Input-Tabel Kuantitas?"),
         selectInput(("pilihTambahBaris_input_new"),
                     " ",
-                    choices = c(5:40),selected = if (is.null(reactData_new$tableIO1)){
+                    choices = c(5:90),selected = if (is.null(reactData_new$tableIO1)){
                       20
                     } else {nrow(reactData_new$tableIO1)}
                     ,width = "800px")
@@ -1270,17 +1270,25 @@ data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button
       colSums(na.rm = T)
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     p.profit <- p.sum.rev - p.sum.cost
     s.profit <- s.sum.rev - s.sum.cost
     profit0 <- 0
     p.profit<-c(profit0,p.profit)
     s.profit<-c(profit0,s.profit)
-    
+
     npv.p<-npv(dataDefine$rate.p/100,p.profit)
     npv.s<-npv(dataDefine$rate.s/100,s.profit)
-    
+
     hsl.npv<-data.frame(PRIVATE=npv.p,SOCIAL=npv.s)
-    
+
     npv.p.us<-npv.p/dataDefine$nilai.tukar
     npv.s.us<-npv.s/dataDefine$nilai.tukar
     npv.us<-data.frame(PRIVATE=npv.p.us,SOCIAL=npv.s.us)

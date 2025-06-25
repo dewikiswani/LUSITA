@@ -15,6 +15,11 @@ argonSidebar <- argonDashSidebar(
     #  "Home"
     # ),
     argonSidebarItem(
+      tabName = "pamBaru",
+      icon = argonIcon(name = "bullet-list-67", color = "danger"),
+      "Membuat PAM Baru"
+    ),
+    argonSidebarItem(
     tabName = "modul1",
      icon = argonIcon(name = "tv-2", color = "info"),
      "Database Profitability"
@@ -29,11 +34,7 @@ argonSidebar <- argonDashSidebar(
       icon = argonIcon(name = "atom", color = "danger"),
       "Simulasi Parsial Data Template"
     ),
-    argonSidebarItem(
-      tabName = "pamBaru",
-      icon = argonIcon(name = "bullet-list-67", color = "danger"),
-      "Membuat PAM Baru"
-    ),
+    
     # argonSidebarItem(
     #   tabName = "deskriptifPlot",
     #   icon = argonIcon(name = "atom", color = "danger"),

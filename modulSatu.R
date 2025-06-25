@@ -9,13 +9,13 @@ modulSatu <- argonTabItem(
       hover_lift = TRUE,
       shadow = TRUE,
       shadow_size = NULL,
-      hover_shadow = T,
+      hover_shadow = FALSE,
       border_level = 0,
       icon = argonIcon("tv-2"),
       status = "primary",
       background_color = NULL,
       gradient = FALSE, 
-      floating = T,
+      floating = FALSE,
       
       # argonRow(
       #   argonColumn(
@@ -116,13 +116,13 @@ modulSatu <- argonTabItem(
       #     tags$div(id = 'uiShowResult')
       #   )
       # ),
-      # argonRow(
-      #   argonColumn(
-      #     width = 12,
-      #     actionButton("browser_button","Browser Button")
-      # 
-      #   )
-      # ),
+      argonRow(
+        argonColumn(
+          width = 12,
+          actionButton("browser_button","Browser Button")
+
+        )
+      ),
 
     )
   )
