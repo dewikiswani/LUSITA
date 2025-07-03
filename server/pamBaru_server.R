@@ -15,7 +15,7 @@
 
 observe({
   updateSelectInput(session,
-                    "selected_prov_new",
+                    "selected_provinsi_new",
                     choices =sort(unique(indonesia$provinsi)))
 })
 
@@ -595,6 +595,7 @@ observeEvent(input$capitalButton_new,{
   dataDefine$priceOutput <- editNewP2
   
   saveRDS(dataDefine,file = fileName)
+  data.gab_new()
   
   # show modal
   showModal(modalTabelCapital_new())
@@ -1209,7 +1210,8 @@ output$tableResultBAU2_new <- renderDataTable({
   
 })
 
-data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button_Yes_new, input$running_button_new),{
+data.gab_new <- reactive({
+  # eventReactive(c(input$running_button_No_new,input$running_button_Yes_new, input$running_button_new),{
   
   datapath <- paste0("data/", input$sut_new, "/","^KOMODITAS BARU","/")
   fileName <- paste0(datapath,"saveData_new","_",
@@ -1582,6 +1584,7 @@ data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button
   # showBauMacro <- data.frame(showBauMacro)
   
   p.profit.ha <- p.profit[-1]
+  p.profit.kum <- cumsum(p.profit.ha)
   
   # RESULT 
   dataDefine$eae <- eae
@@ -1601,6 +1604,7 @@ data.gab_new <- eventReactive(c(input$running_button_No_new,input$running_button
   dataDefine$nlcost <- nlcost
   
   dataDefine$p.profit.ha <- p.profit.ha
+  dataDefine$p.profit.kum <- p.profit.kum
   
   saveRDS(dataDefine,file = fileName)
   

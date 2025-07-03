@@ -27,6 +27,8 @@ library(ggplot2)
 library(cowplot) #ggplot2 white theme 
 library(plotly)
 library(lifecontingencies)
+library(openxlsx2)
+
 
 
 
@@ -49,6 +51,7 @@ source("pamTemplate.R")
 source("modulSatu.R")
 source("pamBaru_modul2.R")
 source("pamParsial_modul3.R")
+source("profitBaru.R")
 
 
 # App
@@ -62,10 +65,12 @@ app <- shiny::shinyApp(
     header = argonHeader,
     body = argonDashBody(
       argonTabItems(
+        profitBaru,
         pamBaru,
         modulSatu,
         pamTemplate,
         pamParsial
+        
         
       )
     ),
@@ -86,7 +91,7 @@ app <- shiny::shinyApp(
     # # End - Section informasi umum ---------------------------------------
     
     observeEvent(input$browser_button,{
-      browser()
+       browser()
     })
     
     reactData <- reactiveValues(
@@ -4864,7 +4869,7 @@ app <- shiny::shinyApp(
     
     
     observeEvent(input$saveNewPAM, {
-      browser()
+      # browser()
       datapath <- paste0("data/", input$sut, "/")
       fileName <- paste0(datapath,"saveData","_",
                          input$sut,"_",input$kom,"_",
@@ -6069,6 +6074,13 @@ app <- shiny::shinyApp(
     #                                                                              #
     ################################################################################
     source("server/pamParsial_server.R", local = TRUE)
+    
+    ################################################################################
+    #                                                                              #
+    #                               PROSES 3 PAM BARU                             #
+    #                                                                              #
+    ################################################################################
+    source("server/profitBaru_server.R", local = TRUE)
     
   }
 )

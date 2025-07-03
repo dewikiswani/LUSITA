@@ -5,7 +5,7 @@ account: dewikiswani
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4371296
-bundleId: 10515775
+bundleId: 10539889
 url: https://dewikiswani.shinyapps.io/lusita/
 version: 1
 asMultiple: FALSE

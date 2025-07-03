@@ -3668,7 +3668,7 @@ profitPlotKumulatifSosial_par <- eventReactive(c(input$runSimPrice,input$runSimI
 
 
 observeEvent(input$saveNewPAM, {
-  browser()
+  # browser()
   datapath <- paste0("data/", input$sut_par, "/",input$kom_par, "/")
   fileName <- paste0(datapath,"saveParDat","_",
                      input$sut_par,"_",input$kom_par,"_",

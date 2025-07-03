@@ -1,55 +1,55 @@
-pamBaru <- argonTabItem(
-  tabName = "pamBaru",
-  argonH1("Membuat PAM Baru", display = 4),
+profitBaru <- argonTabItem(
+  tabName = "profitBaru",
+  argonH1("Analisis Profitabilitas", display = 4),
   argonRow(
     argonCard(
       width = 12,
-      title = "Membuat PAM Baru",
+      title = "Analisis Profitabilitas",
       src = NULL,
       hover_lift = TRUE,
       shadow = TRUE,
       shadow_size = NULL,
-      hover_shadow = FALSE,
+      hover_shadow = TRUE,
       border_level = 0,
-      icon = argonIcon("atom"),
+      icon = argonIcon("money-coins"),
       status = "primary",
       background_color = NULL,
       gradient = FALSE, 
-      floating = FALSE,
+      floating = TRUE,
       
       argonRow(
         argonColumn(
           width = 12,
           argonH1("Informasi Umum", display = 4),
-          h5("Langkah 1: menentukan informasi umum untuk data PAM yang dibangun"),
+          h5("Langkah 1: menentukan informasi umum untuk data yang dibangun"),
           br(),
           fluidRow(
             column(2,
-                   selectInput(("sut_new"),"Sistem Usaha Tani",choices = c("MONOKULTUR","AGROFORESTRI")),
+                   selectInput(("sut_newPro"),"Sistem Usaha Tani",choices = c("MONOKULTUR","AGROFORESTRI")),
             ),
             column(2,
-                   textInput("kom_new","Komoditas", value = NULL ),
+                   textInput("kom_newPro","Komoditas", value = NULL ),
             ),
             column(2,
-                   selectInput("selected_provinsi_new",
+                   selectInput("selected_provinsi_newPro",
                                "Pilih Provinsi:",
                                choices = ""),
             ),
             column(2,
-                   textInput("selected_wilayah_new","Wilayah", value = NULL ),
+                   textInput("selected_wilayah_newPro","Wilayah", value = NULL ),
             ),
           ),
           
           fluidRow(
             column(2,
-                   selectInput(("th_new"),"Tahun",selected = as.integer(format(Sys.Date(), "%Y")),choices = c(1995:as.integer(format(Sys.Date(), "%Y"))) ),
+                   selectInput(("th_newPro"),"Tahun",selected = as.integer(format(Sys.Date(), "%Y")),choices = c(1995:as.integer(format(Sys.Date(), "%Y"))) ),
             ),
             column(2,
-                   selectInput(("tipeLahan_new"),"Tipe Lahan",choices = c("MINERAL","GAMBUT") ),
+                   selectInput(("tipeLahan_newPro"),"Tipe Lahan",choices = c("MINERAL","GAMBUT") ),
                    
             ),
             column(2,
-                   selectInput(("tipeKebun_new"),"Tipe Lahan",choices = c("CROP", "SMALLHOLDER") ),
+                   selectInput(("tipeKebun_newPro"),"Tipe Lahan",choices = c("CROP", "SMALLHOLDER") ),
                    
             ),
             column(4,
@@ -57,7 +57,7 @@ pamBaru <- argonTabItem(
             ),
             column(2,
                    br(),
-                   actionButton(("asumsiMakro_button_new"),"Tentukan Asumsi Makro",icon("paper-plane"),style="color: white; 
+                   actionButton(("asumsiMakro_button_newPro"),"Tentukan Asumsi Makro",icon("paper-plane"),style="color: white; 
                          background-color: green;")
                    #useShinyalert()
                    
@@ -68,20 +68,20 @@ pamBaru <- argonTabItem(
       argonRow(
         argonColumn(
           width = 12,
-          tags$div(id = 'uiShowMakro_new')
+          tags$div(id = 'uiShowMakro_newPro')
           
         )
       ),
       argonRow(
         argonColumn(
           width = 12,
-          tags$div(id = 'uiShowTable_new')
+          tags$div(id = 'uiShowTable_newPro')
         )
       ),
       argonRow(
         argonColumn(
           width = 12,
-          tags$div(id = 'uiShowResult_new')
+          tags$div(id = 'uiShowResult_newPro')
         )
       ),
       
