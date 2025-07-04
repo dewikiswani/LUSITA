@@ -19,11 +19,11 @@ argonSidebar <- argonDashSidebar(
       icon = argonIcon(name = "money-coins", color = "danger"),
       "Analisis Profitabilitas"
     ),
-    argonSidebarItem(
-      tabName = "pamBaru",
-      icon = argonIcon(name = "bullet-list-67", color = "danger"),
-      "Membuat PAM Baru"
-    ),
+    # argonSidebarItem(
+    #   tabName = "pamBaru",
+    #   icon = argonIcon(name = "bullet-list-67", color = "danger"),
+    #   "Membuat PAM Baru"
+    # ),
     argonSidebarItem(
     tabName = "modul1",
      icon = argonIcon(name = "tv-2", color = "info"),
@@ -34,11 +34,11 @@ argonSidebar <- argonDashSidebar(
     #   icon = argonIcon(name = "atom", color = "danger"),
     #   "Membangun PAM dari Data Template"
     # ),
-    # argonSidebarItem(
-    #   tabName = "pamParsial",
-    #   icon = argonIcon(name = "atom", color = "danger"),
-    #   "Simulasi Parsial Data Template"
-    # ),
+    argonSidebarItem(
+      tabName = "pamParsial",
+      icon = argonIcon(name = "atom", color = "danger"),
+      "Simulasi Parsial Data Template"
+    ),
     
     # argonSidebarItem(
     #   tabName = "deskriptifPlot",

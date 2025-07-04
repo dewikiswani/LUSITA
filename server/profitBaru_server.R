@@ -660,9 +660,10 @@ output$showResult_newPro <- renderUI({
     fluidRow(
       
       column(2,
-             actionButton(("saveNewPAM_newPro"),"Simpan PAM",icon("paper-plane"),style="color: white;background-color: green;"),
-             br(),
-             tags$div(id='teksNewPamSave')
+             # actionButton(("saveNewPAM_newPro"),"Simpan Data",icon("paper-plane"),style="color: white;background-color: green;"),
+             downloadButton(("download_newPro"),"Download Hasil",icon("paper-plane"),style="color: white;background-color: green;")
+             # br()
+             # ,tags$div(id='teksNewPamSave')
       )
     )
     
@@ -1110,3 +1111,90 @@ observeEvent(input$saveNewPAM_newPro, {
 
   
 })
+
+
+datasetInput <- reactive({
+  datapath <- paste0("data/", input$sut_newPro, "/","^KOMODITAS BARU","/")
+  fileName <- paste0(datapath,"saveData_newPro","_",
+                     input$sut_newPro,"_",input$kom_newPro,"_",
+                     input$selected_provinsi_newPro,"_",input$th_newPro,"_",input$tipeLahan_newPro,"_",input$tipeKebun_newPro,"_",reactData$timeInput,".rds")
+  dataDefine <- readRDS(fileName)
+  
+  # Inisialisasi workbook kosong
+  wb <- wb_workbook()
+  
+  # 1. Sheet metadata: kumpulkan semua elemen atomik berdimensi 1
+  meta_names <- c()
+  meta_values <- c()
+  
+  for (nm in names(dataDefine)) {
+    el <- dataDefine[[nm]]
+    if (is.atomic(el) && length(el) == 1) {
+      meta_names <- c(meta_names, nm)
+      meta_values <- c(meta_values, el)
+    }
+  }
+  
+  metadata_df <- as.data.frame(t(meta_values), stringsAsFactors = FALSE)
+  colnames(metadata_df) <- meta_names
+  
+  wb$add_worksheet("metadata")
+  wb$add_data("metadata", metadata_df)
+  
+  # 2. Sheet indikator: kumpulkan elemen kecil 1x1 data.frame seperti eae, npv, dst
+  indikator_list <- c("eae", "npv", "ec", "hp", "lr", "rtl", "bcr", "pi", "lcost", "nlcost")
+  indikator_values <- c()
+  indikator_labels <- c()
+  
+  for (nm in indikator_list) {
+    if (nm %in% names(dataDefine)) {
+      val <- dataDefine[[nm]]
+      if (is.data.frame(val) && nrow(val) == 1 && ncol(val) == 1) {
+        indikator_values <- c(indikator_values, unlist(val))
+        indikator_labels <- c(indikator_labels, colnames(val))
+      }
+    }
+  }
+  
+  indikator_df <- as.data.frame(t(indikator_values), stringsAsFactors = FALSE)
+  colnames(indikator_df) <- indikator_labels
+  
+  wb$add_worksheet("indikator")
+  wb$add_data("indikator", indikator_df)
+  
+  # 3. Sheet p.profit.ha (named numeric vector)
+  if ("p.profit.ha" %in% names(dataDefine)) {
+    pp <- dataDefine$p.profit.ha
+    df_pp <- as.data.frame(t(pp))
+    colnames(df_pp) <- names(pp)
+    wb$add_worksheet("p.profit.ha")
+    wb$add_data("p.profit.ha", df_pp)
+  }
+  
+  # 4. Sheet untuk setiap data.frame besar
+  for (nm in names(dataDefine)) {
+    el <- dataDefine[[nm]]
+    
+    # Hindari yang sudah ditangani
+    if (is.data.frame(el) &&
+        !(nm %in% c("eae", "npv", "ec", "hp", "lr", "rtl", "bcr", "pi", "lcost", "nlcost"))) {
+      
+      wb$add_worksheet(nm)
+      wb$add_data(nm, el)
+    }
+  }
+  wb
+  # 5. Simpan workbook
+  # wb$save("C:/Users/dbodro/OneDrive - CIFOR-ICRAF/Documents/GitHub/LUSITA/data/Download/dataDefine_full.xlsx")
+  
+})
+
+output$download_newPro <- downloadHandler(
+  filename = function(){
+    paste0("download_result.xlsx")
+  }
+  ,
+  content = function (file){
+    datasetInput()$save(file)
+  }
+)
